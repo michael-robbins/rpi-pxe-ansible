@@ -1,0 +1,16 @@
+---
+- name: create target
+  ansible.builtin.file:
+    path: "{{ usb_storage.target }}"
+    state: directory
+    mode: "0755"
+  when: usb_storage is defined
+
+- name: mount usb storage via uuid
+  ansible.posix.mount:
+    path: "{{ usb_storage.target }}"
+    src: "UUID={{ usb_storage.uuid }}"
+    fstype: "{{ usb_stoage.fstype | default('ext4') }}"
+    opts: noatime
+    state: present
+  when: usb_storage is defined and usb_storage.uuid is defined

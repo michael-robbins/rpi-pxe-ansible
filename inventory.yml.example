@@ -1,0 +1,13 @@
+all:
+  vars:
+    ansible_connection: ssh
+    ansible_user: pi
+    ansible_become: true
+    ansible_become_user: root
+    ansible_python_interpreter: /usr/bin/python3
+  hosts:
+    your.hostname.goes.here:
+      ansible_host: ip.of.your.rpi
+      usb_storage:
+        target: /data
+        uuid: uuid-of-your-usb-drive

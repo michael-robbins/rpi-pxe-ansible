@@ -1,0 +1,6 @@
+*.retry
+*.swp
+venv/
+ansible_collections/
+
+inventory.yml
