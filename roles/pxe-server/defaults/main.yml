@@ -1,0 +1,18 @@
+---
+pxe_data_dir: "{{ usb_storage_target | default('/data') }}"
+pxe_iso_dir: "{{ pxe_data_dir }}/iso"
+pxe_base_dir: "{{ pxe_data_dir }}/netboot"
+pxe_boot_dir: "{{ pxe_base_dir }}/boot"
+pxe_menu_dir: "{{ pxe_base_dir }}/pxelinux.cfg"
+pxe_mnt_dir: "/mnt"
+
+pxe_boot_modes:
+  - "bios"
+  - "efi64"
+
+pxe_packages:
+  #- "dnsmasq"
+  - "pxelinux"
+  - "syslinux-efi"
+
+pxe_hosting: []

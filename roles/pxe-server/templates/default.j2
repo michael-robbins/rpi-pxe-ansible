@@ -1,0 +1,27 @@
+MENU TITLE  PXE Boot Menu
+DEFAULT     vesamenu.c32
+
+    LABEL local
+        MENU LABEL Boot from local drive
+        LOCALBOOT 0xffff
+
+    {% for arch in pxe_hosting | map(attribute='arch') | list | unique -%}
+    MENU BEGIN {{ arch }}
+    MENU TITLE {{ arch }}
+
+        {% for distro in pxe_hosting | selectattr('arch', 'equalto', arch) | map(attribute='distro') | list | unique -%}
+        MENU BEGIN {{ distro | title }}
+        MENU TITLE {{ distro | title }}
+
+            {% for item in pxe_hosting | selectattr('arch', 'equalto', arch) | selectattr('distro', 'equalto', distro) -%}
+            LABEL install-{{ item.arch }}-{{ item.distro }}-{{ item.version }}-{{ item.variant }}
+                MENU LABEL ^Install {{ item.version }} {{ item.variant }}
+                KERNEL ::boot/{{ item.arch }}/{{ item.distro }}/{{ item.version }}/{{ item.variant }}/casper/vmlinuz
+                APPEND initrd=::boot/{{ item.arch }}/{{ item.distro }}/{{ item.version }}/{{ item.variant }}/casper/initrd quiet  ---
+            {% endfor %}
+
+        MENU END
+        {% endfor %}
+
+    MENU END
+    {%- endfor %}

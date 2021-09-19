@@ -1,0 +1,51 @@
+- name: delete interm and final folders
+  ansible.builtin.file:
+    path: "{{ dir }}"
+    state: absent
+  loop:
+    - "{{ pxe_copy_src }}"
+    - "{{ pxe_copy_dst }}"
+  loop_control:
+    loop_var: "dir"
+
+- name: create interm and final folders
+  ansible.builtin.file:
+    path: "{{ dir }}"
+    state: directory
+    recurse: true
+    mode: "0755"
+  loop:
+    - "{{ pxe_copy_src }}"
+    - "{{ pxe_copy_dst }}"
+  loop_control:
+    loop_var: "dir"
+
+- name: mount the iso
+  ansible.posix.mount:
+    src: "{{ pxe_iso }}"
+    path: "{{ pxe_copy_src }}"
+    state: "mounted"
+    fstype: "{{ pxe_iso_fstype }}"
+    opts: "loop"
+    fstab: /tmp/fstab.tmp
+
+- name: Pause until looked at src folder
+  pause:
+
+- name: copy its contents across
+  ansible.builtin.copy:
+    src: "{{ pxe_copy_src }}/"
+    dest: "{{ pxe_copy_dst }}/"
+    remote_src: true
+    directory_mode: yes
+
+- name: unmount the iso
+  ansible.posix.mount:
+    path: "{{ pxe_copy_src }}"
+    state: absent
+    fstab: /tmp/fstab.tmp
+
+- name: delete the tmp fstab file
+  ansible.builtin.file:
+    path: /tmp/fstab.tmp
+    state: absent
